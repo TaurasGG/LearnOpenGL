@@ -161,6 +161,7 @@
     <ClCompile Include="Sources\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Sources\Camera.h" />
     <ClInclude Include="Sources\Shader.h" />
   </ItemGroup>
   <ItemGroup>
