@@ -1,5 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <windows.h>
 #include "Shader.h"
 #include "Camera.h"
 #include "stb_image/stb_image.h"
@@ -74,6 +75,11 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 int main()
 {
+	HWND windowe;
+	AllocConsole();
+	windowe = FindWindowA("ConsoleWindowClass", NULL);
+	ShowWindow(windowe, 0);
+	
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -201,7 +207,7 @@ int main()
 	
 	int width, height, nrChannels;
 	stbi_set_flip_vertically_on_load(true);
-	unsigned char* data = stbi_load("Resources/Textures/GDlogo.jpg", &width, &height, &nrChannels, 0);
+	unsigned char* data = stbi_load("Resources/Textures/GDlogoW.jpg", &width, &height, &nrChannels, 0);
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -253,7 +259,7 @@ int main()
 		processInput(window);
 		
 		// Rendering commands
-		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		glActiveTexture(GL_TEXTURE0);

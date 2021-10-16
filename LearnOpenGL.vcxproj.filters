@@ -53,10 +53,10 @@
     <Image Include="Resources\Textures\GDlogo.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Resources\Textures\GDlogo.jpg">
+    <Image Include="Resources\Textures\Icon_Green_Smile.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Resources\Textures\Icon_Green_Smile.png">
+    <Image Include="Resources\Textures\GDlogoW.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
