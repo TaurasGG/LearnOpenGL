@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -12,7 +11,9 @@ enum Camera_Movement {
     FORWARD,
     BACKWARD,
     LEFT,
-    RIGHT
+    RIGHT,
+    UP,
+    DOWN
 };
 
 // Default camera values
@@ -70,14 +71,26 @@ public:
     void ProcessKeyboard(Camera_Movement direction, float deltaTime)
     {
         float velocity = MovementSpeed * deltaTime;
+        const glm::vec3 newFwd = glm::normalize(glm::vec3(Front.x, 0.0f, Front.z));
+        const glm::vec3 newRgh = glm::normalize(glm::cross(newFwd, WorldUp));
+        const glm::vec3 newUp = glm::normalize(glm::cross(newFwd, newRgh));
         if (direction == FORWARD)
-            Position += Front * velocity;
+            Position += newFwd * velocity;
         if (direction == BACKWARD)
-            Position -= Front * velocity;
+            Position -= newFwd * velocity;
         if (direction == LEFT)
-            Position -= Right * velocity;
+            Position -= newRgh * velocity;
         if (direction == RIGHT)
-            Position += Right * velocity;
+            Position += newRgh * velocity;
+        if (direction == UP)
+            Position -= newUp * velocity;
+        if (direction == DOWN)
+            Position += newUp * velocity;
+        
+        if (direction == UP)
+            Position.y += WorldUp.y * velocity;
+        if (direction == DOWN)
+            Position.y -= WorldUp.y * velocity;
     }
 
     // processes input received from a mouse input system. Expects the offset value in both the x and y direction.
@@ -92,14 +105,19 @@ public:
         // make sure that when pitch is out of bounds, screen doesn't get flipped
         if (constrainPitch)
         {
-            if (Pitch > 89.0f)
-                Pitch = 89.0f;
-            if (Pitch < -89.0f)
-                Pitch = -89.0f;
+            if (Pitch > 89.9f)
+                Pitch = 89.9f;
+            if (Pitch < -89.9f)
+                Pitch = -89.9f;
         }
 
         // update Front, Right and Up Vectors using the updated Euler angles
         updateCameraVectors();
+    }
+
+    void Reset()
+    {
+        Zoom = 45.0f;
     }
 
     // processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
@@ -108,8 +126,8 @@ public:
         Zoom -= (float)yoffset;
         if (Zoom < 1.0f)
             Zoom = 1.0f;
-        if (Zoom > 45.0f)
-            Zoom = 45.0f;
+        if (Zoom > 90.0f)
+            Zoom = 90.0f;
     }
 
 private:
@@ -124,6 +142,7 @@ private:
         Front = glm::normalize(front);
         // also re-calculate the Right and Up vector
         Right = glm::normalize(glm::cross(Front, WorldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-        Up = glm::normalize(glm::cross(Right, Front));
+        //Up = glm::normalize(glm::cross(Right, Front));
+        Up = glm::vec3(0.0f, 1.0f, 0.0f);
     }
 };

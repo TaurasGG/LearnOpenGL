@@ -53,5 +53,11 @@
     <Image Include="Resources\Textures\GDlogo.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Resources\Textures\GDlogo.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Textures\Icon_Green_Smile.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
