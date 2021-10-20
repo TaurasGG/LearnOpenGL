@@ -1,6 +1,6 @@
+#include <windows.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <windows.h>
 #include "Shader.h"
 #include "Camera.h"
 #include "stb_image/stb_image.h"
@@ -9,8 +9,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-const unsigned int SCR_WIDTH = 1500;
-const unsigned int SCR_HEIGHT = 1000;
+unsigned int SCR_WIDTH = 800;
+unsigned int SCR_HEIGHT = 600;
 
 float op = 1.0f;
 
@@ -22,6 +22,16 @@ bool firstMouse = true;
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
 
+bool wasButtonPressed = false;
+bool State = true;
+bool FullScreen = false;
+
+void window_size_callback(GLFWwindow* window, int width, int height)
+{
+	SCR_WIDTH = width;
+	SCR_HEIGHT = height;
+}
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
@@ -29,56 +39,104 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 void processInput(GLFWwindow* window)
 {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
+	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+	static int winPosX = (mode->width - SCR_WIDTH) / 2;
+	static int winPosY = (mode->height - SCR_HEIGHT) / 2;
+	
+    static int winSizeX = SCR_WIDTH;
+    static int winSizeY = SCR_HEIGHT;
+
+	if (!wasButtonPressed)
+	{
+		if ((glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) && (glfwGetKey(window, GLFW_KEY_GRAVE_ACCENT) == GLFW_PRESS))
+			glfwSetWindowShouldClose(window, true);
+		if ((glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS) && (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED))
+		{
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			State = 0;
+			wasButtonPressed = true;
+		}
+		else if ((glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS) && (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_NORMAL))
+		{
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			State = 1;
+			firstMouse = true;
+			wasButtonPressed = true;
+		}
+		
+		if ((glfwGetKey(window, GLFW_KEY_F2) == GLFW_PRESS) && (FullScreen == true))
+		{
+			glfwSetWindowMonitor(window, nullptr, winPosX, winPosY, winSizeX, winSizeY, GLFW_REFRESH_RATE);
+			wasButtonPressed = true;
+			FullScreen = false;
+		}
+		else if ((glfwGetKey(window, GLFW_KEY_F2) == GLFW_PRESS) && (FullScreen == false))
+		{
+			glfwGetWindowPos(window, &winPosX, &winPosY);   // Save the window position before going fullscreen
+			glfwGetWindowSize(window, &winSizeX, &winSizeY); // Save the window size
+			glfwHideWindow(window); // Hide so that the legacy (Windows 7?) fallback border won't be visible for a split second
+			glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, GLFW_REFRESH_RATE);
+			glfwFocusWindow(window); // Set the focus on the window once in fullscreen so the user doesn't have to click to interact with the window
+			wasButtonPressed = true;
+			FullScreen = true;
+		}
+	}
+	if ((glfwGetKey(window, GLFW_KEY_F1)|glfwGetKey(window, GLFW_KEY_F2)) == GLFW_RELEASE)
+			wasButtonPressed = false;
+
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
 		camera.Reset();
+	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+		camera.InZoom();
+	else
+		camera.UnZoom();
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.ProcessKeyboard(FORWARD, deltaTime);
+		camera.ProcessKeyboard(Camera_Movement::FORWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.ProcessKeyboard(BACKWARD, deltaTime);
+		camera.ProcessKeyboard(Camera_Movement::BACKWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.ProcessKeyboard(LEFT, deltaTime);
+		camera.ProcessKeyboard(Camera_Movement::LEFT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.ProcessKeyboard(RIGHT, deltaTime);
+		camera.ProcessKeyboard(Camera_Movement::RIGHT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-		camera.ProcessKeyboard(UP, deltaTime);
+		camera.ProcessKeyboard(Camera_Movement::UP, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-		camera.ProcessKeyboard(DOWN, deltaTime);
+		camera.ProcessKeyboard(Camera_Movement::DOWN, deltaTime);
 }
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	if (firstMouse)
 	{
-		lastX = xpos;
-		lastY = ypos;
+		lastX = static_cast<float>(xpos);
+		lastY = static_cast<float>(ypos);
 		firstMouse = false;
 	}
 
-	float xoffset = xpos - lastX;
-	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+	float xoffset = static_cast<float>(xpos) - lastX;
+	float yoffset = lastY - static_cast<float>(ypos); // reversed since y-coordinates go from bottom to top
 
-	lastX = xpos;
-	lastY = ypos;
+	lastX = static_cast<float>(xpos);
+	lastY = static_cast<float>(ypos);
 
-	camera.ProcessMouseMovement(xoffset, yoffset);
+	if (State == 1) camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
 // ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	camera.ProcessMouseScroll(yoffset);
+	camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }
 
 int main()
 {
-	HWND windowe;
+	/*HWND windowe;
 	AllocConsole();
 	windowe = FindWindowA("ConsoleWindowClass", NULL);
-	ShowWindow(windowe, 0);
+	ShowWindow(windowe, 0);*/
 	
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -87,7 +145,8 @@ int main()
 #ifdef __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-
+	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Gamedale: Magnum", NULL, NULL);
 	if (window == NULL)
 	{
@@ -97,6 +156,7 @@ int main()
 	}
 
 	glfwMakeContextCurrent(window);
+	glfwSetWindowSizeCallback(window, window_size_callback);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
@@ -169,6 +229,15 @@ int main()
 	glm::vec3(1.5f,  2.0f, -2.5f),
 	glm::vec3(1.5f,  0.2f, -1.5f),
 	glm::vec3(-1.3f,  1.0f, -1.5f)
+	};
+	
+	float UIvertices[] = {
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 	};
 
 	/*unsigned int indices[] =
@@ -252,12 +321,12 @@ int main()
 	while (!glfwWindowShouldClose(window))
 	{
 		// Input
-		float currentFrame = glfwGetTime();
+		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
 		processInput(window);
-		
+
 		// Rendering commands
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -270,8 +339,8 @@ int main()
 		// activate shader
 		shader.use();
 
-		if(op <= 0.0f) in = 0.01;
-		else if (op >= 1.0f) in = -0.01;
+		if(op <= 0.0f) in = 0.01f;
+		else if (op >= 1.0f) in = -0.01f;
 		//op += in;
 		shader.setFloat("op", op);
 

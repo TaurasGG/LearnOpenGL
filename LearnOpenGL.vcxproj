@@ -155,7 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Sources\Application.cpp" />
+    <ClCompile Include="Sources\Magnum.cpp" />
     <ClCompile Include="Sources\glad.c" />
     <ClCompile Include="Sources\Shader.cpp" />
     <ClCompile Include="Sources\stb_image.cpp" />

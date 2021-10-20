@@ -5,9 +5,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <vector>
+#include <iostream>
 
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
-enum Camera_Movement {
+enum class Camera_Movement {
     FORWARD,
     BACKWARD,
     LEFT,
@@ -40,7 +41,9 @@ public:
     // camera options
     float MovementSpeed;
     float MouseSensitivity;
+    float xZoom;
     float Zoom;
+    bool c = 0;
 
     // constructor with vectors
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
@@ -74,45 +77,46 @@ public:
         const glm::vec3 newFwd = glm::normalize(glm::vec3(Front.x, 0.0f, Front.z));
         const glm::vec3 newRgh = glm::normalize(glm::cross(newFwd, WorldUp));
         const glm::vec3 newUp = glm::normalize(glm::cross(newFwd, newRgh));
-        if (direction == FORWARD)
+        if (direction == Camera_Movement::FORWARD)
             Position += newFwd * velocity;
-        if (direction == BACKWARD)
+        if (direction == Camera_Movement::BACKWARD)
             Position -= newFwd * velocity;
-        if (direction == LEFT)
+        if (direction == Camera_Movement::LEFT)
             Position -= newRgh * velocity;
-        if (direction == RIGHT)
+        if (direction == Camera_Movement::RIGHT)
             Position += newRgh * velocity;
-        if (direction == UP)
+        if (direction == Camera_Movement::UP)
             Position -= newUp * velocity;
-        if (direction == DOWN)
+        if (direction == Camera_Movement::DOWN)
             Position += newUp * velocity;
         
-        if (direction == UP)
+        if (direction == Camera_Movement::UP)
             Position.y += WorldUp.y * velocity;
-        if (direction == DOWN)
+        if (direction == Camera_Movement::DOWN)
             Position.y -= WorldUp.y * velocity;
     }
+    
 
     // processes input received from a mouse input system. Expects the offset value in both the x and y direction.
     void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true)
     {
-        xoffset *= MouseSensitivity;
-        yoffset *= MouseSensitivity;
+            xoffset *= MouseSensitivity;
+            yoffset *= MouseSensitivity;
 
-        Yaw += xoffset;
-        Pitch += yoffset;
+            Yaw += xoffset;
+            Pitch += yoffset;
 
-        // make sure that when pitch is out of bounds, screen doesn't get flipped
-        if (constrainPitch)
-        {
-            if (Pitch > 89.9f)
-                Pitch = 89.9f;
-            if (Pitch < -89.9f)
-                Pitch = -89.9f;
-        }
+            // make sure that when pitch is out of bounds, screen doesn't get flipped
+            if (constrainPitch)
+            {
+                if (Pitch > 89.9f)
+                    Pitch = 89.9f;
+                if (Pitch < -89.9f)
+                    Pitch = -89.9f;
+            }
 
-        // update Front, Right and Up Vectors using the updated Euler angles
-        updateCameraVectors();
+            // update Front, Right and Up Vectors using the updated Euler angles
+            updateCameraVectors();
     }
 
     void Reset()
@@ -123,19 +127,38 @@ public:
     // processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
     void ProcessMouseScroll(float yoffset)
     {
-        Zoom -= (float)yoffset;
-        if (Zoom < 1.0f)
-            Zoom = 1.0f;
-        if (Zoom > 90.0f)
-            Zoom = 90.0f;
+        if (c==0)
+        {
+            Zoom -= (float)yoffset;
+            if (Zoom < 10.0f)
+                Zoom = 10.0f;  
+            if (Zoom > 90.0f)
+                Zoom = 90.0f;
+        }
     }
-
+    void InZoom()
+    {
+        if (Zoom != 10.0f)
+        {
+            xZoom = Zoom;
+            Zoom = 10.0f;
+            c = 1;
+        }
+    }
+    void UnZoom()
+    {
+        if (c == 1)
+        {
+            if (Zoom == 10.0f)Zoom = xZoom;
+            c = 0;
+        }
+    }
 private:
     // calculates the front vector from the Camera's (updated) Euler Angles
     void updateCameraVectors()
     {
         // calculate the new Front vector
-        glm::vec3 front;
+        glm::vec3 front = glm::vec3(0.0f);
         front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
         front.y = sin(glm::radians(Pitch));
         front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
