@@ -24,6 +24,7 @@
     <ProjectGuid>{f71974f1-b49f-4f25-8d9c-bcefc9e24b0e}</ProjectGuid>
     <RootNamespace>LearnOpenGL</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Magnum</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -155,26 +156,35 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Sources\Magnum.cpp" />
+    <ClCompile Include="Sources\Application.cpp" />
     <ClCompile Include="Sources\glad.c" />
     <ClCompile Include="Sources\Shader.cpp" />
     <ClCompile Include="Sources\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Sources\Camera.h" />
     <ClInclude Include="Sources\Shader.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Shaders\Fragment.shader" />
-    <None Include="Resources\Shaders\Vertex.shader" />
+    <None Include="Resources\Shaders\Color.fs.glsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Resources\Shaders\Color.vs.glsl" />
+    <None Include="Resources\Shaders\Light.fs.glsl" />
+    <None Include="Resources\Shaders\Light.vs.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Textures\awesomeface.png" />
     <Image Include="Resources\Textures\container.jpg" />
     <Image Include="Resources\Textures\GDlogoW.jpg" />
     <Image Include="Resources\Textures\GDlogo.png" />
+    <Image Include="Resources\Textures\Icon.ico" />
     <Image Include="Resources\Textures\Icon_Green_Smile.png" />
     <Image Include="Resources\Textures\wall.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Magnum.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

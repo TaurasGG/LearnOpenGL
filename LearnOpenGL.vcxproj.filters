@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Sources\Magnum.cpp">
+    <ClCompile Include="Sources\Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sources\glad.c">
@@ -35,10 +35,15 @@
     <ClInclude Include="Sources\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Shaders\Fragment.shader" />
-    <None Include="Resources\Shaders\Vertex.shader" />
+    <None Include="Resources\Shaders\Color.vs.glsl" />
+    <None Include="Resources\Shaders\Light.vs.glsl" />
+    <None Include="Resources\Shaders\Light.fs.glsl" />
+    <None Include="Resources\Shaders\Color.fs.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Textures\awesomeface.png">
@@ -59,5 +64,13 @@
     <Image Include="Resources\Textures\GDlogoW.jpg">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Resources\Textures\Icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Magnum.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
