@@ -167,16 +167,18 @@
     <ClInclude Include="Sources\Shader.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Shaders\Color.fs.glsl">
+    <None Include="Resources\Shaders\Color.fragment.shader">
       <FileType>Document</FileType>
     </None>
-    <None Include="Resources\Shaders\Color.vs.glsl" />
-    <None Include="Resources\Shaders\Light.fs.glsl" />
-    <None Include="Resources\Shaders\Light.vs.glsl" />
+    <None Include="Resources\Shaders\Color.vertex.shader" />
+    <None Include="Resources\Shaders\Light.fragment.shader" />
+    <None Include="Resources\Shaders\Light.vertex.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Textures\awesomeface.png" />
     <Image Include="Resources\Textures\container.jpg" />
+    <Image Include="Resources\Textures\container2.png" />
+    <Image Include="Resources\Textures\container2_specular.png" />
     <Image Include="Resources\Textures\GDlogoW.jpg" />
     <Image Include="Resources\Textures\GDlogo.png" />
     <Image Include="Resources\Textures\Icon.ico" />

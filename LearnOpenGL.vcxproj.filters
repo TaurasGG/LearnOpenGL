@@ -40,10 +40,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Shaders\Color.vs.glsl" />
-    <None Include="Resources\Shaders\Light.vs.glsl" />
-    <None Include="Resources\Shaders\Light.fs.glsl" />
-    <None Include="Resources\Shaders\Color.fs.glsl" />
+    <None Include="Resources\Shaders\Color.vertex.shader" />
+    <None Include="Resources\Shaders\Light.vertex.shader" />
+    <None Include="Resources\Shaders\Light.fragment.shader" />
+    <None Include="Resources\Shaders\Color.fragment.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Textures\awesomeface.png">
@@ -65,6 +65,12 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Resources\Textures\Icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Textures\container2_specular.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Textures\container2.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
